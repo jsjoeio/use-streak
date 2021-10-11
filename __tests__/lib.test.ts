@@ -5,6 +5,7 @@ import {
   buildStreakCount,
   incrementStreakCount,
   intializeStreak,
+  getStreak,
   resetStreakCount,
   shouldInrementOrResetStreakCount,
 } from "../src/lib";
@@ -119,9 +120,37 @@ describe("initializeStreak", () => {
     expect(getStreak()).not.toBeNull();
     const parsedStreak: Streak = JSON.parse(getStreak() || "");
     expect(parsedStreak.currentCount).toBe(1);
-    // TODO@jsjoeio stopped here
-    // toDateString() is apparently not a function? Who knew?
-    // expect(parsedStreak.lastLoginDate.toDateString()).toMatch("fhel");
+    expect(new Date(parsedStreak.lastLoginDate).toDateString()).toMatch(
+      today.toDateString()
+    );
+  });
+});
+
+describe("getStreak", () => {
+  let mockLocalStorage: Storage;
+
+  beforeEach(() => {
+    const mockJSDom = new JSDOM("", { url: "https://localhost" });
+    const today = new Date();
+    const fakeStreak = buildStreakCount(today);
+
+    mockLocalStorage = mockJSDom.window.localStorage;
+    intializeStreak(mockLocalStorage, fakeStreak);
+  });
+
+  afterEach(() => {
+    mockLocalStorage.removeItem(STREAK_KEY);
+  });
+
+  it("should get the streak from local storage if it exists", () => {
+    const streak = getStreak(mockLocalStorage);
+    expect(streak).not.toBeNull();
+    expect(Object.prototype.hasOwnProperty.call(streak, "currentCount")).toBe(
+      true
+    );
+    expect(Object.prototype.hasOwnProperty.call(streak, "startDate")).toBe(
+      true
+    );
   });
 });
 
@@ -132,9 +161,7 @@ Things we need to do:
 - create and store it 
 - if need to reset, then update
 
-intialize...
 get...
 update...
-
 
 */

@@ -75,3 +75,8 @@ export function intializeStreak(_localStorage: Storage, streak: Streak) {
   const value = JSON.stringify(streak);
   _localStorage.setItem(STREAK_KEY, value);
 }
+
+export function getStreak(_localStorage: Storage) {
+  const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
+  return streak;
+}
