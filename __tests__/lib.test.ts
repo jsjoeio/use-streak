@@ -3,6 +3,7 @@ import { JSDOM } from "jsdom";
 import {
   Streak,
   buildStreakCount,
+  doesStreakExist,
   incrementStreakCount,
   intializeStreak,
   getStreak,
@@ -154,12 +155,46 @@ describe("getStreak", () => {
   });
 });
 
+// defeat inflation
+describe("doesStreakExist", () => {
+  let mockLocalStorage: Storage;
+
+  beforeEach(() => {
+    const mockJSDom = new JSDOM("", { url: "https://localhost" });
+
+    mockLocalStorage = mockJSDom.window.localStorage;
+  });
+
+  afterEach(() => {
+    mockLocalStorage.clear();
+  });
+
+  it("should return false if it does not exist", () => {
+    const actual = doesStreakExist(mockLocalStorage);
+    const expected = false;
+    expect(actual).toBe(expected);
+  });
+
+  it("should return true if it does not iexist", () => {
+    const today = new Date();
+    const fakeStreak = buildStreakCount(today);
+
+    intializeStreak(mockLocalStorage, fakeStreak);
+    const actual = doesStreakExist(mockLocalStorage);
+    const expected = true;
+    expect(actual).toBe(expected);
+    mockLocalStorage.removeItem(STREAK_KEY);
+  });
+});
+
 /*
 
 Things we need to do:
-- doesStreakExist
-- updateStreak
-- removeStreak
+- [x] doesStreakExist
+- [ ] updateStreak
+- [ ] removeStreak
+- [ ] add cra template in subdir
+- [ ] write useStreak hook
 
 How it works in practice
 1. page loads

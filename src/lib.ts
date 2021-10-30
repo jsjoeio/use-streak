@@ -80,3 +80,11 @@ export function getStreak(_localStorage: Storage) {
   const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
   return streak;
 }
+
+// motto 10/30
+// defeat inflation
+// i don't have time to use my mouse
+
+export function doesStreakExist(_localStorage: Storage) {
+  return _localStorage.getItem(STREAK_KEY) !== null;
+}
