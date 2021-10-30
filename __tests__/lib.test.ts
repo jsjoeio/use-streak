@@ -157,11 +157,23 @@ describe("getStreak", () => {
 /*
 
 Things we need to do:
-- check if streak object exists in localStorage
-- create and store it 
-- if need to reset, then update
+- doesStreakExist
+- updateStreak
+- removeStreak
 
-get...
-update...
+How it works in practice
+1. page loads
+2. check doesStreakExist
+3. if it does, use shouldInrementOrResetStreakCount 
+4. increment or reset  
+5. updateStreak
 
+How we'd use it in a React app
+// This would return a Streak object 
+const [streak] = useStreak(localStorage)
+
+// and have these three values:
+// startDate: Date;
+// lastLoginDate: Date;
+// currentCount: number;
 */
