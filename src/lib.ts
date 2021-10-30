@@ -77,14 +77,27 @@ export function intializeStreak(_localStorage: Storage, streak: Streak) {
 }
 
 export function getStreak(_localStorage: Storage) {
-  const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
-  return streak;
+  try {
+    const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
+    return streak;
+  } catch (error) {
+    console.error(
+      error,
+      "something went wrong getting the streak. JSON.parse error?"
+    );
+    return undefined;
+  }
 }
 
 // motto 10/30
 // defeat inflation
 // i don't have time to use my mouse
+// i see you use date-fns over moment, man of culture
 
 export function doesStreakExist(_localStorage: Storage) {
   return _localStorage.getItem(STREAK_KEY) !== null;
+}
+
+export function removeStreak(_localStorage: Storage) {
+  _localStorage.removeItem(STREAK_KEY);
 }

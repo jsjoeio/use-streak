@@ -3,6 +3,7 @@ import { JSDOM } from "jsdom";
 import {
   Streak,
   buildStreakCount,
+  removeStreak,
   doesStreakExist,
   incrementStreakCount,
   intializeStreak,
@@ -187,12 +188,37 @@ describe("doesStreakExist", () => {
   });
 });
 
+describe("removeStreak", () => {
+  let mockLocalStorage: Storage;
+
+  beforeEach(() => {
+    const mockJSDom = new JSDOM("", { url: "https://localhost" });
+
+    mockLocalStorage = mockJSDom.window.localStorage;
+  });
+
+  afterEach(() => {
+    mockLocalStorage.clear();
+  });
+
+  it("should remove the streak from localStorage/", () => {
+    // check that it exists first
+    const today = new Date();
+    const fakeStreak = buildStreakCount(today);
+
+    intializeStreak(mockLocalStorage, fakeStreak);
+    expect(mockLocalStorage.getItem(STREAK_KEY)).not.toBe(null);
+    removeStreak(mockLocalStorage);
+    expect(mockLocalStorage.getItem(STREAK_KEY)).toBe(null);
+  });
+});
+
 /*
 
 Things we need to do:
 - [x] doesStreakExist
+- [x] removeStreak
 - [ ] updateStreak
-- [ ] removeStreak
 - [ ] add cra template in subdir
 - [ ] write useStreak hook
 
