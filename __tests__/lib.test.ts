@@ -4,6 +4,7 @@ import {
   Streak,
   buildStreakCount,
   removeStreak,
+  updateStreak,
   doesStreakExist,
   incrementStreakCount,
   intializeStreak,
@@ -213,12 +214,44 @@ describe("removeStreak", () => {
   });
 });
 
+describe("updateStreak", () => {
+  let mockLocalStorage: Storage;
+
+  beforeEach(() => {
+    const mockJSDom = new JSDOM("", { url: "https://localhost" });
+    const today = new Date();
+    const fakeStreak = buildStreakCount(today);
+
+    mockLocalStorage = mockJSDom.window.localStorage;
+    intializeStreak(mockLocalStorage, fakeStreak);
+  });
+
+  afterEach(() => {
+    mockLocalStorage.clear();
+  });
+
+  it("should update the streak and save to localStorage", () => {
+    // 1. getStreak -> assert the currentCount
+    const streak = getStreak(mockLocalStorage);
+    if (streak) {
+      expect(streak?.currentCount).toBe(1);
+      // 2. updateStreak -> save localStorage
+      // TODO@jsjoeio - don't assert as Streak
+      const updatedStreak = incrementStreakCount(streak);
+      updateStreak(mockLocalStorage, updatedStreak);
+
+      // 3. getStreak (again) -> assert the currentCount ++
+      expect(streak?.currentCount).toBe(2);
+    }
+  });
+});
+
 /*
 
 Things we need to do:
 - [x] doesStreakExist
 - [x] removeStreak
-- [ ] updateStreak
+- [x] updateStreak
 - [ ] add cra template in subdir
 - [ ] write useStreak hook
 

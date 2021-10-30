@@ -23,7 +23,7 @@ export function resetStreakCount(currentStreak: Streak, date: Date) {
   };
 }
 
-export function incrementStreakCount(currentStreak: Streak) {
+export function incrementStreakCount(currentStreak: Streak): Streak {
   return {
     ...currentStreak,
     currentCount: (currentStreak.currentCount += 1),
@@ -76,7 +76,12 @@ export function intializeStreak(_localStorage: Storage, streak: Streak) {
   _localStorage.setItem(STREAK_KEY, value);
 }
 
-export function getStreak(_localStorage: Storage) {
+export function updateStreak(_localStorage: Storage, streak: Streak) {
+  const value = JSON.stringify(streak);
+  _localStorage.setItem(STREAK_KEY, value);
+}
+
+export function getStreak(_localStorage: Storage): Streak | undefined {
   try {
     const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
     return streak;
@@ -93,6 +98,8 @@ export function getStreak(_localStorage: Storage) {
 // defeat inflation
 // i don't have time to use my mouse
 // i see you use date-fns over moment, man of culture
+// is your life typescript everything at this point?
+// I am normal 24 year old guy in India
 
 export function doesStreakExist(_localStorage: Storage) {
   return _localStorage.getItem(STREAK_KEY) !== null;
