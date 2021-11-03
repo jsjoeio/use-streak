@@ -108,3 +108,20 @@ export function doesStreakExist(_localStorage: Storage) {
 export function removeStreak(_localStorage: Storage) {
   _localStorage.removeItem(STREAK_KEY);
 }
+
+export function useStreak(_localStorage: Storage) {
+  // Check if streak exists
+  const _doesStreakExist = doesStreakExist(_localStorage);
+
+  if (_doesStreakExist) {
+    const streak = getStreak(_localStorage);
+    return streak;
+  }
+
+  const initialStreak = buildStreakCount(new Date());
+  intializeStreak(_localStorage, initialStreak);
+  const streak = getStreak(_localStorage);
+
+  return streak;
+  // if it doesn't intialize and return it
+}

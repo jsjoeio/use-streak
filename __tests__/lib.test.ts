@@ -1,7 +1,8 @@
-import { sub } from "date-fns";
+import { sub, isSameDay } from "date-fns";
 import { JSDOM } from "jsdom";
 import {
   Streak,
+  useStreak,
   buildStreakCount,
   removeStreak,
   updateStreak,
@@ -246,14 +247,80 @@ describe("updateStreak", () => {
   });
 });
 
+describe("useStreak", () => {
+  let mockLocalStorage: Storage;
+
+  beforeEach(() => {
+    const mockJSDom = new JSDOM("", { url: "https://localhost" });
+    const today = new Date();
+    const fakeStreak = buildStreakCount(today);
+
+    mockLocalStorage = mockJSDom.window.localStorage;
+    intializeStreak(mockLocalStorage, fakeStreak);
+  });
+
+  afterEach(() => {
+    mockLocalStorage.clear();
+  });
+
+  it("should always return a streak", () => {
+    const streak = useStreak(mockLocalStorage);
+    expect(streak).not.toBeNull();
+
+    expect(Object.prototype.hasOwnProperty.call(streak, "currentCount")).toBe(
+      true
+    );
+    expect(Object.prototype.hasOwnProperty.call(streak, "startDate")).toBe(
+      true
+    );
+
+    // delete it and see if we still get it when calling streak
+    removeStreak(mockLocalStorage);
+
+    const streak2 = useStreak(mockLocalStorage);
+
+    expect(streak2).not.toBeUndefined();
+  });
+
+  it("should automatically reset the streak", () => {
+    const streak = useStreak(mockLocalStorage);
+    const initialLastLoginDate = streak?.lastLoginDate;
+    expect(initialLastLoginDate).not.toBeNull();
+
+    // simulate the streak as if it were two days prior
+    // then get it now and it should reset because
+    // we broke the streak
+    // 1. overwrite the streakLastLoginDate
+    if (streak) {
+      console.log(streak, "streak");
+      const twoDaysAgo = sub(streak?.lastLoginDate, { days: 2 });
+      streak.lastLoginDate = twoDaysAgo;
+      // 2. store it in localStorage
+      updateStreak(mockLocalStorage, streak);
+      // 3. call streak2
+      const streak2 = useStreak(mockLocalStorage);
+      if (streak2) {
+        // 4. assert streak2.lastLoginDate should not be the one we overwrote it to
+        console.log(streak2.lastLoginDate, "last login date");
+        console.log(`${twoDaysAgo} twoDaysAgo mate`);
+        const _isSameDay = isSameDay(streak2.lastLoginDate, twoDaysAgo);
+        expect(_isSameDay).toBe(false);
+      }
+    }
+  });
+});
+
 /*
 
 Things we need to do:
 - [x] doesStreakExist
 - [x] removeStreak
 - [x] updateStreak
-- [ ] add cra template in subdir
 - [ ] write useStreak hook
+  - [ ] fix getStreak
+  - [ ] finish useStreak reset test
+  - [ ] add test for increment
+- [ ] add cra template in subdir
 
 How it works in practice
 1. page loads
@@ -270,4 +337,17 @@ const [streak] = useStreak(localStorage)
 // startDate: Date;
 // lastLoginDate: Date;
 // currentCount: number;
+*/
+
+/*
+  11/3/2021
+stopped here.
+need to update getStreak to ensure that lastLoginDate and othe Date properties
+actually come back as Date objects. right now, they come back as date strings
+fix this...
+then finish the useStreak tests
+NyxKrage suggests using parseISO() from date-fns because new Date can fail if 
+your language changeTs
+TIL
+
 */
