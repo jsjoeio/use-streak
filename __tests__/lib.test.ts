@@ -61,7 +61,10 @@ describe("incrementStreakCount", () => {
       lastLoginDate: currentDateFormatted,
     };
 
-    const updatedStreakCount = incrementStreakCount(fakeStreakCount);
+    const updatedStreakCount = incrementStreakCount(
+      fakeStreakCount,
+      new Date()
+    );
 
     expect(updatedStreakCount.currentCount).toBe(6);
   });
@@ -248,7 +251,7 @@ describe("updateStreak", () => {
       expect(streak?.currentCount).toBe(1);
       // 2. updateStreak -> save localStorage
       // TODO@jsjoeio - don't assert as Streak
-      const updatedStreak = incrementStreakCount(streak);
+      const updatedStreak = incrementStreakCount(streak, new Date());
       updateStreak(mockLocalStorage, updatedStreak);
 
       // 3. getStreak (again) -> assert the currentCount ++
@@ -323,7 +326,7 @@ describe("useStreak", () => {
       }
     }
   });
-  it.only("should automatically increment the streak", () => {
+  it("should automatically increment the streak", () => {
     const streak = useStreak(mockLocalStorage, new Date());
     const initialLastLoginDate = streak?.lastLoginDate;
     expect(initialLastLoginDate).not.toBeNull();
@@ -363,11 +366,12 @@ Things we need to do:
 - [x] doesStreakExist
 - [x] removeStreak
 - [x] updateStreak
-- [ ] write useStreak hook
+- [x] write useStreak hook
   - [x] fix getStreak
-  - [ ] finish useStreak reset test
-  - [ ] add test for increment
+  - [x] finish useStreak reset test
+  - [x] add test for increment
 - [ ] add cra template in subdir
+- [ ] remove React from main root
 
 How it works in practice
 1. page loads

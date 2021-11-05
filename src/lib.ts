@@ -118,7 +118,7 @@ export function removeStreak(_localStorage: Storage) {
   _localStorage.removeItem(STREAK_KEY);
 }
 
-export function useStreak(_localStorage: Storage, date: Date) {
+export function useStreak(_localStorage: Storage, currentDate: Date) {
   // Check if streak exists
   const _doesStreakExist = doesStreakExist(_localStorage);
 
@@ -128,18 +128,18 @@ export function useStreak(_localStorage: Storage, date: Date) {
     if (streak) {
       // check if we should increment or reset
       const { shouldIncrement, shouldReset } = shouldInrementOrResetStreakCount(
-        formattedDate(date),
+        formattedDate(currentDate),
         streak?.lastLoginDate || "10/21/2021"
       );
 
       if (shouldReset) {
-        const updatedStreak = resetStreakCount(streak, date);
+        const updatedStreak = resetStreakCount(streak, currentDate);
         updateStreak(_localStorage, updatedStreak);
         return updatedStreak;
       }
 
       if (shouldIncrement) {
-        const updatedStreak = incrementStreakCount(streak);
+        const updatedStreak = incrementStreakCount(streak, currentDate);
         updateStreak(_localStorage, updatedStreak);
         return updatedStreak;
       }
@@ -147,13 +147,13 @@ export function useStreak(_localStorage: Storage, date: Date) {
       return streak;
     }
 
-    const initialStreak = buildStreakCount(date);
+    const initialStreak = buildStreakCount(currentDate);
     intializeStreak(_localStorage, initialStreak);
     const _streak = getStreak(_localStorage);
     return _streak;
   }
 
-  const initialStreak = buildStreakCount(date);
+  const initialStreak = buildStreakCount(currentDate);
   intializeStreak(_localStorage, initialStreak);
   const streak = getStreak(_localStorage);
 
