@@ -1,31 +1,37 @@
-import { differenceInDays } from "date-fns";
-import { STREAK_KEY } from "./constants";
+import { differenceInDays, format } from "date-fns";
+import { STREAK_KEY, DATE_FORMAT } from "./constants";
 
 export type Streak = {
-  startDate: Date;
-  lastLoginDate: Date;
+  startDate: string;
+  lastLoginDate: string;
   currentCount: number;
 };
 
-export function buildStreakCount(date: Date) {
+export const formattedDate = (date: Date) => format(date, DATE_FORMAT);
+
+export function buildStreakCount(date: Date): Streak {
   return {
-    startDate: date,
-    lastLoginDate: date,
+    startDate: formattedDate(date),
+    lastLoginDate: formattedDate(date),
     currentCount: 1,
   };
 }
 
 export function resetStreakCount(currentStreak: Streak, date: Date) {
   return {
-    startDate: date,
-    lastLoginDate: date,
+    startDate: formattedDate(date),
+    lastLoginDate: formattedDate(date),
     currentCount: 1,
   };
 }
 
-export function incrementStreakCount(currentStreak: Streak): Streak {
+export function incrementStreakCount(
+  currentStreak: Streak,
+  date: Date
+): Streak {
   return {
     ...currentStreak,
+    lastLoginDate: formattedDate(date),
     currentCount: (currentStreak.currentCount += 1),
   };
 }
@@ -38,10 +44,13 @@ export function incrementStreakCount(currentStreak: Streak): Streak {
  * reset streak count
  */
 export function shouldInrementOrResetStreakCount(
-  currentDate: Date,
-  lastLoginDate: Date
+  currentDate: string,
+  lastLoginDate: string
 ) {
-  const difference = differenceInDays(currentDate, lastLoginDate);
+  // We get 11/5/2021
+  // so to get 5, we split on / and get the second item
+  const difference =
+    parseInt(currentDate.split("/")[1]) - parseInt(lastLoginDate.split("/")[1]);
 
   // logging in on the same day
   if (difference === 0) {
@@ -109,19 +118,44 @@ export function removeStreak(_localStorage: Storage) {
   _localStorage.removeItem(STREAK_KEY);
 }
 
-export function useStreak(_localStorage: Storage) {
+export function useStreak(_localStorage: Storage, date: Date) {
   // Check if streak exists
   const _doesStreakExist = doesStreakExist(_localStorage);
 
   if (_doesStreakExist) {
     const streak = getStreak(_localStorage);
-    return streak;
+
+    if (streak) {
+      // check if we should increment or reset
+      const { shouldIncrement, shouldReset } = shouldInrementOrResetStreakCount(
+        formattedDate(date),
+        streak?.lastLoginDate || "10/21/2021"
+      );
+
+      if (shouldReset) {
+        const updatedStreak = resetStreakCount(streak, date);
+        updateStreak(_localStorage, updatedStreak);
+        return updatedStreak;
+      }
+
+      if (shouldIncrement) {
+        const updatedStreak = incrementStreakCount(streak);
+        updateStreak(_localStorage, updatedStreak);
+        return updatedStreak;
+      }
+
+      return streak;
+    }
+
+    const initialStreak = buildStreakCount(date);
+    intializeStreak(_localStorage, initialStreak);
+    const _streak = getStreak(_localStorage);
+    return _streak;
   }
 
-  const initialStreak = buildStreakCount(new Date());
+  const initialStreak = buildStreakCount(date);
   intializeStreak(_localStorage, initialStreak);
   const streak = getStreak(_localStorage);
 
   return streak;
-  // if it doesn't intialize and return it
 }

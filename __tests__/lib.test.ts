@@ -1,4 +1,4 @@
-import { sub, isSameDay } from "date-fns";
+import { sub, isSameDay, format, add } from "date-fns";
 import { JSDOM } from "jsdom";
 import {
   Streak,
@@ -12,8 +12,12 @@ import {
   getStreak,
   resetStreakCount,
   shouldInrementOrResetStreakCount,
+  formattedDate,
 } from "../src/lib";
 import { STREAK_KEY } from "../src/constants";
+
+// Test helper
+const currentDateFormatted = formattedDate(new Date());
 
 describe("buildStreakCount", () => {
   it("should return a Streak object", () => {
@@ -27,7 +31,8 @@ describe("buildStreakCount", () => {
       true
     );
 
-    expect(actual.startDate).toBe(currentDate);
+    const expected = currentDateFormatted;
+    expect(actual.startDate).toBe(expected);
     expect(actual.currentCount).toBe(1);
   });
 });
@@ -37,13 +42,13 @@ describe("resetStreakCount", () => {
     const currentDate = new Date();
     const fakeStreakCount = {
       currentCount: 5,
-      startDate: new Date(),
-      lastLoginDate: new Date(),
+      startDate: currentDateFormatted,
+      lastLoginDate: currentDateFormatted,
     };
 
     const updatedStreakCount = resetStreakCount(fakeStreakCount, currentDate);
 
-    expect(updatedStreakCount.startDate).toBe(currentDate);
+    expect(updatedStreakCount.startDate).toBe(currentDateFormatted);
     expect(updatedStreakCount.currentCount).toBe(1);
   });
 });
@@ -52,8 +57,8 @@ describe("incrementStreakCount", () => {
   it("should increment the currentCount", () => {
     const fakeStreakCount = {
       currentCount: 5,
-      startDate: new Date(),
-      lastLoginDate: new Date(),
+      startDate: currentDateFormatted,
+      lastLoginDate: currentDateFormatted,
     };
 
     const updatedStreakCount = incrementStreakCount(fakeStreakCount);
@@ -64,8 +69,8 @@ describe("incrementStreakCount", () => {
 
 describe("shouldInrementOrResetStreakCount", () => {
   it("should return an object with shouldIncrement and shouldRest boolean values", () => {
-    const currentDate = new Date();
-    const lastLoginDate = new Date();
+    const currentDate = currentDateFormatted;
+    const lastLoginDate = currentDateFormatted;
     const actual = shouldInrementOrResetStreakCount(currentDate, lastLoginDate);
 
     expect(
@@ -77,8 +82,8 @@ describe("shouldInrementOrResetStreakCount", () => {
   });
 
   it("should return an object with shouldIncrement as false if currentDate and lastLoginDate are the same", () => {
-    const currentDate = new Date();
-    const lastLoginDate = new Date();
+    const currentDate = currentDateFormatted;
+    const lastLoginDate = currentDateFormatted;
     const actual = shouldInrementOrResetStreakCount(currentDate, lastLoginDate);
 
     expect(actual.shouldIncrement).toBe(false);
@@ -86,8 +91,8 @@ describe("shouldInrementOrResetStreakCount", () => {
   });
 
   it("should return an object with shouldIncrement as true if currentDate is 1 day after lastLoginDate", () => {
-    const currentDate = new Date();
-    const lastLoginDate = sub(currentDate, { days: 1 });
+    const currentDate = currentDateFormatted;
+    const lastLoginDate = formattedDate(sub(new Date(), { days: 1 }));
     const actual = shouldInrementOrResetStreakCount(currentDate, lastLoginDate);
 
     expect(actual.shouldIncrement).toBe(true);
@@ -95,8 +100,8 @@ describe("shouldInrementOrResetStreakCount", () => {
   });
 
   it("should return an object with shouldReset as true if currentDate is 2 days after lastLoginDate", () => {
-    const currentDate = new Date();
-    const lastLoginDate = sub(currentDate, { days: 2 });
+    const currentDate = currentDateFormatted;
+    const lastLoginDate = formattedDate(sub(new Date(), { days: 2 }));
     const actual = shouldInrementOrResetStreakCount(currentDate, lastLoginDate);
 
     expect(actual.shouldIncrement).toBe(false);
@@ -124,9 +129,7 @@ describe("initializeStreak", () => {
     expect(getStreak()).not.toBeNull();
     const parsedStreak: Streak = JSON.parse(getStreak() || "");
     expect(parsedStreak.currentCount).toBe(1);
-    expect(new Date(parsedStreak.lastLoginDate).toDateString()).toMatch(
-      today.toDateString()
-    );
+    expect(parsedStreak.lastLoginDate).toBe(currentDateFormatted);
   });
 });
 
@@ -136,7 +139,7 @@ describe("getStreak", () => {
   beforeEach(() => {
     const mockJSDom = new JSDOM("", { url: "https://localhost" });
     const today = new Date();
-    const fakeStreak = buildStreakCount(today);
+    const fakeStreak: Streak = buildStreakCount(today);
 
     mockLocalStorage = mockJSDom.window.localStorage;
     intializeStreak(mockLocalStorage, fakeStreak);
@@ -155,6 +158,13 @@ describe("getStreak", () => {
     expect(Object.prototype.hasOwnProperty.call(streak, "startDate")).toBe(
       true
     );
+    expect(Object.prototype.hasOwnProperty.call(streak, "lastLoginDate")).toBe(
+      true
+    );
+
+    if (streak) {
+      expect(streak.startDate).toBe(currentDateFormatted);
+    }
   });
 });
 
@@ -264,7 +274,7 @@ describe("useStreak", () => {
   });
 
   it("should always return a streak", () => {
-    const streak = useStreak(mockLocalStorage);
+    const streak = useStreak(mockLocalStorage, new Date());
     expect(streak).not.toBeNull();
 
     expect(Object.prototype.hasOwnProperty.call(streak, "currentCount")).toBe(
@@ -277,34 +287,71 @@ describe("useStreak", () => {
     // delete it and see if we still get it when calling streak
     removeStreak(mockLocalStorage);
 
-    const streak2 = useStreak(mockLocalStorage);
+    const streak2 = useStreak(mockLocalStorage, new Date());
 
     expect(streak2).not.toBeUndefined();
   });
 
   it("should automatically reset the streak", () => {
-    const streak = useStreak(mockLocalStorage);
+    const streak = useStreak(mockLocalStorage, new Date());
     const initialLastLoginDate = streak?.lastLoginDate;
     expect(initialLastLoginDate).not.toBeNull();
 
-    // simulate the streak as if it were two days prior
-    // then get it now and it should reset because
-    // we broke the streak
-    // 1. overwrite the streakLastLoginDate
+    // Instead, what if we pretend to login
+    // two days later
+    // which should reset the streak
     if (streak) {
-      console.log(streak, "streak");
-      const twoDaysAgo = sub(streak?.lastLoginDate, { days: 2 });
-      streak.lastLoginDate = twoDaysAgo;
-      // 2. store it in localStorage
-      updateStreak(mockLocalStorage, streak);
-      // 3. call streak2
-      const streak2 = useStreak(mockLocalStorage);
+      const twoDaysLater = add(new Date(streak?.lastLoginDate), { days: 2 });
+      const streak2 = useStreak(mockLocalStorage, twoDaysLater);
       if (streak2) {
-        // 4. assert streak2.lastLoginDate should not be the one we overwrote it to
-        console.log(streak2.lastLoginDate, "last login date");
-        console.log(`${twoDaysAgo} twoDaysAgo mate`);
-        const _isSameDay = isSameDay(streak2.lastLoginDate, twoDaysAgo);
-        expect(_isSameDay).toBe(false);
+        // the startDate and lastLoginDate should both be twoDaysLater
+        const isSameStartDate = isSameDay(
+          new Date(streak2.lastLoginDate),
+          twoDaysLater
+        );
+
+        const isSameLastLoginDate = isSameDay(
+          new Date(streak2.startDate),
+          twoDaysLater
+        );
+        expect(isSameStartDate).toBe(true);
+        expect(isSameLastLoginDate).toBe(true);
+
+        // ensure it's not the same as the original streak
+        expect(streak.startDate).not.toBe(streak2.startDate);
+        expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
+      }
+    }
+  });
+  it.only("should automatically increment the streak", () => {
+    const streak = useStreak(mockLocalStorage, new Date());
+    const initialLastLoginDate = streak?.lastLoginDate;
+    expect(initialLastLoginDate).not.toBeNull();
+
+    // Pretend we login one day later
+    // which should increment the streak
+    if (streak) {
+      const oneDayLater = add(new Date(streak?.lastLoginDate), { days: 1 });
+      const streak2 = useStreak(mockLocalStorage, oneDayLater);
+      if (streak2) {
+        console.log(streak, "streak1");
+        console.log(streak2, "streak2");
+        // the startDate and lastLoginDate should both be twoDaysLater
+        const isSameStartDate = isSameDay(
+          new Date(streak2.lastLoginDate),
+          oneDayLater
+        );
+
+        const isSameLastLoginDate = isSameDay(
+          new Date(streak2.startDate),
+          oneDayLater
+        );
+        expect(isSameStartDate).toBe(true);
+        expect(isSameLastLoginDate).toBe(false);
+
+        // this should be the same
+        expect(streak.startDate).toBe(streak2.startDate);
+        expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
       }
     }
   });
@@ -317,7 +364,7 @@ Things we need to do:
 - [x] removeStreak
 - [x] updateStreak
 - [ ] write useStreak hook
-  - [ ] fix getStreak
+  - [x] fix getStreak
   - [ ] finish useStreak reset test
   - [ ] add test for increment
 - [ ] add cra template in subdir
