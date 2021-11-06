@@ -371,7 +371,7 @@ Things we need to do:
   - [x] finish useStreak reset test
   - [x] add test for increment
 - [ ] add cra template in subdir
-- [ ] remove React from main root
+- [x] remove React from main root
 
 How it works in practice
 1. page loads
