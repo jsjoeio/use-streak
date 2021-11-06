@@ -1,9 +1,10 @@
-import { sub, isSameDay, format, add } from "date-fns";
+import { sub, isSameDay, add } from "date-fns";
 import { JSDOM } from "jsdom";
 import {
   Streak,
   useStreak,
   buildStreakCount,
+  STREAK_KEY,
   removeStreak,
   updateStreak,
   doesStreakExist,
@@ -14,7 +15,6 @@ import {
   shouldInrementOrResetStreakCount,
   formattedDate,
 } from "../src/lib";
-import { STREAK_KEY } from "../src/constants";
 
 // Test helper
 const currentDateFormatted = formattedDate(new Date());

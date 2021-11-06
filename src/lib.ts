@@ -1,5 +1,6 @@
-import { differenceInDays, format } from "date-fns";
-import { STREAK_KEY, DATE_FORMAT } from "./constants";
+import { format } from "date-fns";
+export const STREAK_KEY = "streak";
+export const DATE_FORMAT = "MM/dd/yyyy";
 
 export type Streak = {
   startDate: string;
