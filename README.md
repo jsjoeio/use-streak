@@ -15,7 +15,8 @@ const streak = useStreak(localStorage, today)
 // } 
 ```
 
-![screenshot of streak demo](./streak-demo.png | width=100)
+<img src="./streak-demo.png" alt="screenshot of streak demo" width="200" />
+
 ## LICENSE
 
 MIT. Just make sure you give acknowledgements to this repo.
