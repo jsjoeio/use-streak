@@ -80,10 +80,6 @@ export function shouldInrementOrResetStreakCount(
   };
 }
 
-/*
-
-original stream: https://www.youtube.com/watch?v=ndBAg6lqlwI
-*/
 
 export function intializeStreak(_localStorage: Storage, streak: Streak) {
   const value = JSON.stringify(streak);
@@ -107,13 +103,6 @@ export function getStreak(_localStorage: Storage): Streak | undefined {
     return undefined;
   }
 }
-
-// motto 10/30
-// defeat inflation
-// i don't have time to use my mouse
-// i see you use date-fns over moment, man of culture
-// is your life typescript everything at this point?
-// I am normal 24 year old guy in India
 
 export function doesStreakExist(_localStorage: Storage) {
   return _localStorage.getItem(STREAK_KEY) !== null;

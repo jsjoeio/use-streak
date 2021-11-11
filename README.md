@@ -9,7 +9,7 @@ A basic demo for a streak counter.
 
 # TODOs
 
-- [ ] Clean up code
+- [x] Clean up code
 - [ ] Clean up README
 - [ ] Clean up GitHub repo page
 - [ ] Share on Twitter
