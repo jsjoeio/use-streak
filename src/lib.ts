@@ -1,6 +1,4 @@
-import { format } from "date-fns";
 export const STREAK_KEY = "streak";
-export const DATE_FORMAT = "MM/dd/yyyy";
 
 export type Streak = {
   startDate: string;
@@ -8,7 +6,13 @@ export type Streak = {
   currentCount: number;
 };
 
-export const formattedDate = (date: Date) => format(date, DATE_FORMAT);
+export function formattedDate(date: Date): string {
+  // NOTE@jsjoeio
+  // sometimes this returns 11/11/2021
+  // other times it returns 11/11/2021, 12:00:00 AM
+  // which is why we call the .split at the end
+  return date.toLocaleString('en-US').split(",")[0]
+}
 
 export function buildStreakCount(date: Date): Streak {
   return {

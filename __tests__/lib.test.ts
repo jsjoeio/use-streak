@@ -360,45 +360,19 @@ describe("useStreak", () => {
   });
 });
 
-/*
-
-Things we need to do:
-- [x] doesStreakExist
-- [x] removeStreak
-- [x] updateStreak
-- [x] write useStreak hook
-  - [x] fix getStreak
-  - [x] finish useStreak reset test
-  - [x] add test for increment
-- [ ] add cra template in subdir
-- [x] remove React from main root
-
-How it works in practice
-1. page loads
-2. check doesStreakExist
-3. if it does, use shouldInrementOrResetStreakCount 
-4. increment or reset  
-5. updateStreak
-
-How we'd use it in a React app
-// This would return a Streak object 
-const [streak] = useStreak(localStorage)
-
-// and have these three values:
-// startDate: Date;
-// lastLoginDate: Date;
-// currentCount: number;
-*/
-
-/*
-  11/3/2021
-stopped here.
-need to update getStreak to ensure that lastLoginDate and othe Date properties
-actually come back as Date objects. right now, they come back as date strings
-fix this...
-then finish the useStreak tests
-NyxKrage suggests using parseISO() from date-fns because new Date can fail if 
-your language changeTs
-TIL
-
-*/
+describe("formattedDate", () => {
+  it("should return a date in MM/dd/yyy", () => {
+    const today = new Date("11/11/2021")
+    const actual = formattedDate(today)
+    const expected = "11/11/2021"
+    
+    expect(actual).toBe(expected)
+  })
+  it("should return a date in MM/dd/yyy (example 2)", () => {
+    const today = new Date("10/11/2021")
+    const actual = formattedDate(today)
+    const expected = "10/11/2021"
+    
+    expect(actual).toBe(expected)
+  })
+})
