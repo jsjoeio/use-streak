@@ -11,7 +11,7 @@ export function formattedDate(date: Date): string {
   // sometimes this returns 11/11/2021
   // other times it returns 11/11/2021, 12:00:00 AM
   // which is why we call the .split at the end
-  return date.toLocaleString('en-US').split(",")[0]
+  return date.toLocaleString("en-US").split(",")[0];
 }
 
 export function buildStreakCount(date: Date): Streak {
@@ -80,7 +80,6 @@ export function shouldInrementOrResetStreakCount(
   };
 }
 
-
 export function intializeStreak(_localStorage: Storage, streak: Streak) {
   const value = JSON.stringify(streak);
   _localStorage.setItem(STREAK_KEY, value);
@@ -91,16 +90,18 @@ export function updateStreak(_localStorage: Storage, streak: Streak) {
   _localStorage.setItem(STREAK_KEY, value);
 }
 
-export function getStreak(_localStorage: Storage): Streak | undefined {
+export function getStreak(_localStorage: Storage): Streak {
   try {
     const streak = JSON.parse(_localStorage.getItem(STREAK_KEY) || "");
     return streak;
   } catch (error) {
     console.error(
       error,
-      "something went wrong getting the streak. JSON.parse error?"
+      "something went wrong getting the streak. JSON.parse error? initializing and getting streak."
     );
-    return undefined;
+
+    const today = new Date();
+    return initializeAndGetStreak(_localStorage, today);
   }
 }
 
@@ -112,6 +113,13 @@ export function removeStreak(_localStorage: Storage) {
   _localStorage.removeItem(STREAK_KEY);
 }
 
+function initializeAndGetStreak(_localStorage: Storage, currentDate: Date) {
+  const initialStreak = buildStreakCount(currentDate);
+  intializeStreak(_localStorage, initialStreak);
+  const _streak = getStreak(_localStorage);
+  return _streak;
+}
+
 export function useStreak(_localStorage: Storage, currentDate: Date) {
   // Check if streak exists
   const _doesStreakExist = doesStreakExist(_localStorage);
@@ -119,37 +127,27 @@ export function useStreak(_localStorage: Storage, currentDate: Date) {
   if (_doesStreakExist) {
     const streak = getStreak(_localStorage);
 
-    if (streak) {
-      // check if we should increment or reset
-      const { shouldIncrement, shouldReset } = shouldInrementOrResetStreakCount(
-        formattedDate(currentDate),
-        streak?.lastLoginDate || "10/21/2021"
-      );
+    // check if we should increment or reset
+    const { shouldIncrement, shouldReset } = shouldInrementOrResetStreakCount(
+      formattedDate(currentDate),
+      streak?.lastLoginDate || "10/21/2021"
+    );
 
-      if (shouldReset) {
-        const updatedStreak = resetStreakCount(streak, currentDate);
-        updateStreak(_localStorage, updatedStreak);
-        return updatedStreak;
-      }
-
-      if (shouldIncrement) {
-        const updatedStreak = incrementStreakCount(streak, currentDate);
-        updateStreak(_localStorage, updatedStreak);
-        return updatedStreak;
-      }
-
-      return streak;
+    if (shouldReset) {
+      const updatedStreak = resetStreakCount(streak, currentDate);
+      updateStreak(_localStorage, updatedStreak);
+      return updatedStreak;
     }
 
-    const initialStreak = buildStreakCount(currentDate);
-    intializeStreak(_localStorage, initialStreak);
-    const _streak = getStreak(_localStorage);
-    return _streak;
+    if (shouldIncrement) {
+      const updatedStreak = incrementStreakCount(streak, currentDate);
+      updateStreak(_localStorage, updatedStreak);
+      return updatedStreak;
+    }
+
+    return streak;
   }
 
-  const initialStreak = buildStreakCount(currentDate);
-  intializeStreak(_localStorage, initialStreak);
-  const streak = getStreak(_localStorage);
-
-  return streak;
+  const _streak = initializeAndGetStreak(_localStorage, currentDate);
+  return _streak;
 }

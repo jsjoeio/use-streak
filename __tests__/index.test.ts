@@ -165,9 +165,7 @@ describe("getStreak", () => {
       true
     );
 
-    if (streak) {
-      expect(streak.startDate).toBe(currentDateFormatted);
-    }
+    expect(streak.startDate).toBe(currentDateFormatted);
   });
 });
 
@@ -247,16 +245,14 @@ describe("updateStreak", () => {
   it("should update the streak and save to localStorage", () => {
     // 1. getStreak -> assert the currentCount
     const streak = getStreak(mockLocalStorage);
-    if (streak) {
-      expect(streak?.currentCount).toBe(1);
-      // 2. updateStreak -> save localStorage
-      // TODO@jsjoeio - don't assert as Streak
-      const updatedStreak = incrementStreakCount(streak, new Date());
-      updateStreak(mockLocalStorage, updatedStreak);
+    expect(streak.currentCount).toBe(1);
+    // 2. updateStreak -> save localStorage
+    // TODO@jsjoeio - don't assert as Streak
+    const updatedStreak = incrementStreakCount(streak, new Date());
+    updateStreak(mockLocalStorage, updatedStreak);
 
-      // 3. getStreak (again) -> assert the currentCount ++
-      expect(streak?.currentCount).toBe(2);
-    }
+    // 3. getStreak (again) -> assert the currentCount ++
+    expect(streak.currentCount).toBe(2);
   });
 });
 
@@ -297,82 +293,76 @@ describe("useStreak", () => {
 
   it("should automatically reset the streak", () => {
     const streak = useStreak(mockLocalStorage, new Date());
-    const initialLastLoginDate = streak?.lastLoginDate;
+    const initialLastLoginDate = streak.lastLoginDate;
     expect(initialLastLoginDate).not.toBeNull();
 
     // Instead, what if we pretend to login
     // two days later
     // which should reset the streak
-    if (streak) {
-      const twoDaysLater = add(new Date(streak?.lastLoginDate), { days: 2 });
-      const streak2 = useStreak(mockLocalStorage, twoDaysLater);
-      if (streak2) {
-        // the startDate and lastLoginDate should both be twoDaysLater
-        const isSameStartDate = isSameDay(
-          new Date(streak2.lastLoginDate),
-          twoDaysLater
-        );
+    const twoDaysLater = add(new Date(streak.lastLoginDate), { days: 2 });
+    const streak2 = useStreak(mockLocalStorage, twoDaysLater);
+    // the startDate and lastLoginDate should both be twoDaysLater
+    const isSameStartDate = isSameDay(
+      new Date(streak2.lastLoginDate),
+      twoDaysLater
+    );
 
-        const isSameLastLoginDate = isSameDay(
-          new Date(streak2.startDate),
-          twoDaysLater
-        );
-        expect(isSameStartDate).toBe(true);
-        expect(isSameLastLoginDate).toBe(true);
+    const isSameLastLoginDate = isSameDay(
+      new Date(streak2.startDate),
+      twoDaysLater
+    );
+    expect(isSameStartDate).toBe(true);
+    expect(isSameLastLoginDate).toBe(true);
 
-        // ensure it's not the same as the original streak
-        expect(streak.startDate).not.toBe(streak2.startDate);
-        expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
-      }
-    }
+    // ensure it's not the same as the original streak
+    expect(streak.startDate).not.toBe(streak2.startDate);
+    expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
   });
   it("should automatically increment the streak", () => {
     const streak = useStreak(mockLocalStorage, new Date());
-    const initialLastLoginDate = streak?.lastLoginDate;
+    const initialLastLoginDate = streak.lastLoginDate;
     expect(initialLastLoginDate).not.toBeNull();
 
     // Pretend we login one day later
     // which should increment the streak
-    if (streak) {
-      const oneDayLater = add(new Date(streak?.lastLoginDate), { days: 1 });
-      const streak2 = useStreak(mockLocalStorage, oneDayLater);
-      if (streak2) {
-        console.log(streak, "streak1");
-        console.log(streak2, "streak2");
-        // the startDate and lastLoginDate should both be twoDaysLater
-        const isSameStartDate = isSameDay(
-          new Date(streak2.lastLoginDate),
-          oneDayLater
-        );
+    const oneDayLater = add(new Date(streak.lastLoginDate), { days: 1 });
+    const streak2 = useStreak(mockLocalStorage, oneDayLater);
+    if (streak2) {
+      console.log(streak, "streak1");
+      console.log(streak2, "streak2");
+      // the startDate and lastLoginDate should both be twoDaysLater
+      const isSameStartDate = isSameDay(
+        new Date(streak2.lastLoginDate),
+        oneDayLater
+      );
 
-        const isSameLastLoginDate = isSameDay(
-          new Date(streak2.startDate),
-          oneDayLater
-        );
-        expect(isSameStartDate).toBe(true);
-        expect(isSameLastLoginDate).toBe(false);
+      const isSameLastLoginDate = isSameDay(
+        new Date(streak2.startDate),
+        oneDayLater
+      );
+      expect(isSameStartDate).toBe(true);
+      expect(isSameLastLoginDate).toBe(false);
 
-        // this should be the same
-        expect(streak.startDate).toBe(streak2.startDate);
-        expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
-      }
+      // this should be the same
+      expect(streak.startDate).toBe(streak2.startDate);
+      expect(streak.lastLoginDate).not.toBe(streak2.lastLoginDate);
     }
   });
 });
 
 describe("formattedDate", () => {
   it("should return a date in MM/dd/yyy", () => {
-    const today = new Date("11/11/2021")
-    const actual = formattedDate(today)
-    const expected = "11/11/2021"
-    
-    expect(actual).toBe(expected)
-  })
+    const today = new Date("11/11/2021");
+    const actual = formattedDate(today);
+    const expected = "11/11/2021";
+
+    expect(actual).toBe(expected);
+  });
   it("should return a date in MM/dd/yyy (example 2)", () => {
-    const today = new Date("10/11/2021")
-    const actual = formattedDate(today)
-    const expected = "10/11/2021"
-    
-    expect(actual).toBe(expected)
-  })
-})
+    const today = new Date("10/11/2021");
+    const actual = formattedDate(today);
+    const expected = "10/11/2021";
+
+    expect(actual).toBe(expected);
+  });
+});
