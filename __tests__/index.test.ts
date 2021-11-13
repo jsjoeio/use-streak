@@ -14,7 +14,7 @@ import {
   resetStreakCount,
   shouldInrementOrResetStreakCount,
   formattedDate,
-} from "../src/lib";
+} from "../src/index";
 
 // Test helper
 const currentDateFormatted = formattedDate(new Date());
