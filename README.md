@@ -19,6 +19,8 @@ const streak = useStreak(localStorage, today);
 
 <img src="./streak-demo.png" alt="screenshot of streak demo" width="200" />
 
+[![Edit vigorous-wood-o8m7w](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vigorous-wood-o8m7w?fontsize=14&hidenavigation=1&theme=dark)
+
 ## LICENSE
 
 MIT. Just make sure you give acknowledgements to this repo.
