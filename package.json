@@ -1,6 +1,12 @@
 {
   "name": "use-streak",
   "version": "1.0.0",
+  "author": "Joe Previte",
+  "homepage": "https://github.com/jsjoeio/use-streak",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsjoeio/use-streak"
+  },
   "description": "a streak counter to track your streak in days (similar to Duolingo)",
   "keywords": [
     "typescript",
