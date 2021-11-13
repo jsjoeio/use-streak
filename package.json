@@ -14,18 +14,29 @@
     "streak",
     "duolingo"
   ],
-  "main": "lib.ts",
+  "type": "module",
+  "source": "src/lib.ts",
+  "exports": {
+    "require": "./dist/lib.cjs",
+    "default": "./dist/lib.modern.js"
+  },
+  "main": "./dist/lib.cjs",
+  "module": "./dist/lib.module.js",
+  "unpkg": "./dist/lib.umd.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch",
+    "test": "jest"
+  },
   "devDependencies": {
-    "@types/jsdom": "16.2.13",
     "@types/jest": "^27.0.2",
+    "@types/jsdom": "16.2.13",
     "date-fns": "2.25.0",
     "jest": "^27.2.5",
     "jsdom": "17.0.0",
+    "microbundle": "^0.14.1",
     "ts-jest": "^27.0.5",
     "typescript": "4.4.2"
-  },
-  "scripts": {
-    "test": "jest"
   },
   "license": "MIT"
 }
