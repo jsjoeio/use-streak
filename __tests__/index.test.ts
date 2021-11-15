@@ -2,7 +2,6 @@ import { sub, isSameDay, add } from "date-fns";
 import { JSDOM } from "jsdom";
 import {
   Streak,
-  useStreak,
   buildStreakCount,
   STREAK_KEY,
   removeStreak,
@@ -14,7 +13,8 @@ import {
   resetStreakCount,
   shouldInrementOrResetStreakCount,
   formattedDate,
-} from "../src/index";
+} from "../src/lib";
+import { useStreak } from "../src/index";
 
 // Test helper
 const currentDateFormatted = formattedDate(new Date());
