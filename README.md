@@ -1,8 +1,20 @@
 # Streak Counter
 
+![npm](https://img.shields.io/npm/v/use-streak)
+
 This is a basic streak counter - inspired by Duolingo - written in TypeScript and meant for the browser (uses `localStorage`).
 
-## Usage
+## Install
+
+```shell
+yarn add use-streak
+```
+
+```shell
+npm install use-streak
+```
+
+### Usage
 
 ```typescript
 import { useStreak } from "use-streak";
