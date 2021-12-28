@@ -1,4 +1,4 @@
-# Streak Counter
+# `useStreak` - a basic streak counter
 
 ![npm](https://img.shields.io/npm/v/use-streak)
 
