@@ -1,0 +1,29 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repo
+        uses: actions/checkout@v1
+
+      - name: Get changed docs files
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v23.2
+        with:
+          files: |
+            *.md
+
+      - name: Deploy docs
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: |
+          echo "docs have changed. deploying"
