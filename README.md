@@ -4,6 +4,8 @@
 
 This is a basic streak counter - inspired by Duolingo - written in TypeScript and meant for the browser (uses `localStorage`).
 
+If you want to learn TypeScript and rebuild this from scratch, check out my free email course [here](https://www.typescriptcourse.com/build-a-typescript-project-from-scratch).
+
 ## Install
 
 ```shell
